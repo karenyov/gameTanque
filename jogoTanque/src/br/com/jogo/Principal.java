@@ -4,6 +4,8 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 
@@ -84,13 +86,15 @@ public class Principal {
 		frame.getContentPane().add(lblNvel);
 
 		JComboBox comboNivel = new JComboBox();
+		comboNivel.addItem("");
 		for (Niveis nivel : Niveis.values()) {
 			comboNivel.addItem(nivel);
 		}
 		comboNivel.setBounds(149, 172, 178, 20);
 		frame.getContentPane().add(comboNivel);
-		
+
 		JComboBox comboCor = new JComboBox();
+		comboCor.addItem("");
 		comboCor.setBounds(149, 229, 178, 20);
 		for (Cores cor : Cores.values()) {
 			comboCor.addItem(cor);
@@ -100,19 +104,30 @@ public class Principal {
 		JButton btnStart = new JButton("START");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Jogador jogador = new Jogador();
-				jogador.setNome(textNome.getText());
 
-				Jogo jogo = new Jogo();
-				jogo.setJogador(jogador);
-				jogo.setNivel((Niveis) comboNivel.getSelectedItem());
+				if (comboCor.getSelectedItem().equals("") || comboNivel.getSelectedItem().equals("")) {
+                    JOptionPane.showMessageDialog(null, "Todos os campos são obrigatórios.");
 
-				frame.setVisible(false); // you can't see me!
-				frame.dispose(); // Destroy the JFrame object
-				
-				Arena arena = new Arena(600, 400);
-				arena.adicionaTanque(new Tanque(100, 200, 0, Color.BLUE));
-				arena.setConfig(arena);
+				} else {
+					Jogador jogador = new Jogador();
+					jogador.setNome(textNome.getText());
+
+					Jogo jogo = new Jogo();
+					jogo.setJogador(jogador);
+					jogo.setNivel((Niveis) comboNivel.getSelectedItem());
+
+					frame.setVisible(false); // you can't see me!
+					frame.dispose(); // Destroy the JFrame object
+
+					Tanque tanque = new Tanque(100, 200, 0, getCor(comboCor.getSelectedItem().toString()));
+					tanque.setEstaAtivo(true);
+
+					Arena arena = new Arena(600, 400);
+					arena.adicionaTanque(tanque);
+					arena.setConfig(arena, jogo);
+					arena.setArena(arena);
+
+				}
 			}
 		});
 		btnStart.setForeground(new Color(255, 255, 255));
@@ -120,12 +135,28 @@ public class Principal {
 		btnStart.setFont(new Font("Tahoma", Font.BOLD, 11));
 		btnStart.setBounds(176, 275, 127, 38);
 		frame.getContentPane().add(btnStart);
-		
+
 		JLabel lblNewLabel_1 = new JLabel("Cor Tanque:");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblNewLabel_1.setForeground(new Color(255, 255, 255));
 		lblNewLabel_1.setBounds(149, 207, 178, 14);
 		frame.getContentPane().add(lblNewLabel_1);
-		
+
+	}
+
+	public static Color getCor(String corSelecionada) {
+		Color cor = null;
+		switch (corSelecionada) {
+		case "AZUL":
+			return cor.BLUE;
+		case "VERMELHO":
+			return cor.RED;
+		case "VERDE":
+			return cor.GREEN;
+		case "AMARELO":
+			return cor.YELLOW;
+		default:
+			return cor.GRAY;
+		}
 	}
 }

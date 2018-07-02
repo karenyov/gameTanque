@@ -18,6 +18,8 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import br.com.jogo.componentes.Tanque;
+import br.com.jogo.config.Cores;
+import br.com.jogo.config.Jogo;
 
 /**
  * @author Karen 1 de jul de 2018
@@ -28,6 +30,7 @@ public class Arena extends JComponent implements KeyListener, MouseListener, Act
 	private int largura, altura;
 	private HashSet<Tanque> tanques;
 	private Timer contador;
+	private Arena arena;
 
 	public Arena(int largura, int altura) {
 		this.largura = largura;
@@ -113,7 +116,6 @@ public class Arena extends JComponent implements KeyListener, MouseListener, Act
 		repaint();
 	}
 
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -162,9 +164,9 @@ public class Arena extends JComponent implements KeyListener, MouseListener, Act
 	 */
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		
+
 	}
-	
+
 	public static void main(String args[]) {
 		Arena arena = new Arena(600, 400);
 		arena.adicionaTanque(new Tanque(100, 200, 0, Color.BLUE));
@@ -178,13 +180,94 @@ public class Arena extends JComponent implements KeyListener, MouseListener, Act
 		janela.setVisible(true);
 		janela.setDefaultCloseOperation(3);
 	}
-	
-	public void setConfig(Arena arena) {
+
+	/**
+	 * Método que seta a configuração inicial do jogo
+	 * 
+	 * @param arena
+	 * @param jogo
+	 */
+	public void setConfig(Arena arena, Jogo jogo) {
+
+		// Configura o Nivel
+		switch (jogo.getNivel().toString()) {
+		case "FACIL":
+			setConfigFacil(arena, jogo);
+			break;
+		case "MEDIO":
+			setConfigMedio(arena, jogo);
+			break;
+		case "DIFICIL":
+			setConfigDificil(arena, jogo);
+			break;
+		default:
+			break;
+		}
+
 		JFrame janela = new JFrame("Tanques");
-		janela.getContentPane().add(arena);
-		janela.addKeyListener(arena);
+		janela.getContentPane().add(arena.getArena());
+		janela.addKeyListener(arena.getArena());
 		janela.pack();
 		janela.setVisible(true);
 		janela.setDefaultCloseOperation(3);
 	}
+
+	/**
+	 * Configuração para NÍVEL=> FACIL
+	 * 
+	 * - Apenas um Tanque inimigo
+	 */
+	public static void setConfigFacil(Arena arena, Jogo jogo) {
+		
+		for (int i = 0; i < 1; i++) {
+			for (Cores cor : Cores.values()) {
+				if (jogo.getCorTanque() != cor) {
+					System.out.println("aa");
+					arena.adicionaTanque(new Tanque(450, 50, 157, getCor(cor.toString())));
+					break;
+				}
+			}
+		}
+		arena.setArena(arena);
+	}
+
+	public static void setConfigMedio(Arena arena, Jogo jogo) {
+
+	}
+
+	public static void setConfigDificil(Arena arena, Jogo jogo) {
+
+	}
+
+	public static Color getCor(String corSelecionada) {
+		Color cor = null;
+		switch (corSelecionada) {
+		case "AZUL":
+			return cor.BLUE;
+		case "VERMELHO":
+			return cor.RED;
+		case "VERDE":
+			return cor.GREEN;
+		case "AMARELO":
+			return cor.YELLOW;
+		default:
+			return cor.GRAY;
+		}
+	}
+
+	/**
+	 * @return the arena
+	 */
+	public Arena getArena() {
+		return arena;
+	}
+
+	/**
+	 * @param arena
+	 *            the arena to set
+	 */
+	public void setArena(Arena arena) {
+		this.arena = arena;
+	}
+
 }
