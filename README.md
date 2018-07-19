@@ -2,8 +2,8 @@
 
 Jogo Tanque!
 
-![alt tag](https://github.com/karenyov/gameTanque/img/principal.png)
-![alt tag](https://github.com/karenyov/gameTanque/img/arena.png)
+![alt tag](https://github.com/karenyov/gameTanque/blob/master/img/principal.png)
+![alt tag](https://github.com/karenyov/gameTanque/blob/master/img/arena.png)
 
 ## Executando
 
