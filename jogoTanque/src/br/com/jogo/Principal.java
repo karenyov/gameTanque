@@ -105,8 +105,9 @@ public class Principal {
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (comboCor.getSelectedItem().equals("") || comboNivel.getSelectedItem().equals("")) {
-                    JOptionPane.showMessageDialog(null, "Todos os campos são obrigatórios.");
+				if (comboCor.getSelectedItem().equals("") || comboNivel.getSelectedItem().equals("")
+						|| textNome.getText().equals("")) {
+					JOptionPane.showMessageDialog(null, "Todos os campos são obrigatórios.");
 
 				} else {
 					Jogador jogador = new Jogador();
@@ -114,6 +115,7 @@ public class Principal {
 
 					Jogo jogo = new Jogo();
 					jogo.setJogador(jogador);
+					jogo.setCorTanque((Cores) comboCor.getSelectedItem());
 					jogo.setNivel((Niveis) comboNivel.getSelectedItem());
 
 					frame.setVisible(false); // you can't see me!
@@ -124,9 +126,7 @@ public class Principal {
 
 					Arena arena = new Arena(600, 400);
 					arena.adicionaTanque(tanque);
-					arena.setConfig(arena, jogo);
-					arena.setArena(arena);
-
+					arena.setConfig(jogo);
 				}
 			}
 		});

@@ -41,6 +41,81 @@ public class Tanque {
 		angulo -= a;
 	}
 
+	/**
+	 * @return the x
+	 */
+	public double getX() {
+		return x;
+	}
+
+	/**
+	 * @param x
+	 *            the x to set
+	 */
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	/**
+	 * @return the y
+	 */
+	public double getY() {
+		return y;
+	}
+
+	/**
+	 * @param y
+	 *            the y to set
+	 */
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	/**
+	 * @return the angulo
+	 */
+	public double getAngulo() {
+		return angulo;
+	}
+
+	/**
+	 * @param angulo
+	 *            the angulo to set
+	 */
+	public void setAngulo(double angulo) {
+		this.angulo = angulo;
+	}
+
+	/**
+	 * @return the velocidade
+	 */
+	public double getVelocidade() {
+		return velocidade;
+	}
+
+	/**
+	 * @param velocidade
+	 *            the velocidade to set
+	 */
+	public void setVelocidade(double velocidade) {
+		this.velocidade = velocidade;
+	}
+
+	/**
+	 * @return the cor
+	 */
+	public Color getCor() {
+		return cor;
+	}
+
+	/**
+	 * @param cor
+	 *            the cor to set
+	 */
+	public void setCor(Color cor) {
+		this.cor = cor;
+	}
+
 	public void mover() {
 		x = x + Math.sin(Math.toRadians(angulo)) * velocidade;
 		y = y - Math.cos(Math.toRadians(angulo)) * velocidade;
@@ -70,7 +145,7 @@ public class Tanque {
 	public boolean getEstaAtivo() {
 		return this.estaAtivo;
 	}
-	
+
 	public void setEstaAtivo(boolean estaAtivo) {
 		this.estaAtivo = estaAtivo;
 	}

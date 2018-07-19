@@ -9,15 +9,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import br.com.jogo.componentes.Tanque;
+import br.com.jogo.componentes.Tiro;
 import br.com.jogo.config.Cores;
 import br.com.jogo.config.Jogo;
 
@@ -26,18 +27,18 @@ import br.com.jogo.config.Jogo;
  */
 
 @SuppressWarnings("serial")
-public class Arena extends JComponent implements KeyListener, MouseListener, ActionListener {
+public class Arena extends JComponent implements KeyListener, ActionListener {
 	private int largura, altura;
 	private HashSet<Tanque> tanques;
+	private List<Tiro> tiros;
 	private Timer contador;
-	private Arena arena;
 
 	public Arena(int largura, int altura) {
 		this.largura = largura;
 		this.altura = altura;
 		tanques = new HashSet<Tanque>();
-		addMouseListener(this);
 		contador = new Timer(500, this);
+		tiros = new ArrayList<Tiro>();
 		contador.start();
 	}
 
@@ -72,48 +73,34 @@ public class Arena extends JComponent implements KeyListener, MouseListener, Act
 		// Desenhamos todos os tanques
 		for (Tanque t : tanques)
 			t.draw(g2d);
-	}
-
-	public void mouseClicked(MouseEvent e) {
-		for (Tanque t : tanques)
-			t.setEstaAtivo(false);
-		for (Tanque t : tanques) {
-			boolean clicado = t.getRectEnvolvente().contains(e.getX(), e.getY());
-			if (clicado) {
-				t.setEstaAtivo(true);
-				switch (e.getButton()) {
-				case MouseEvent.BUTTON1:
-					t.girarAntiHorario(25);
-					break;
-				case MouseEvent.BUTTON2:
-					t.aumentarVelocidade();
-					break;
-				case MouseEvent.BUTTON3:
-					t.girarHorario(25);
-					break;
-				}
-				break;
-			}
-		}
-		repaint();
-	}
-
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	public void mouseExited(MouseEvent e) {
-	}
-
-	public void mousePressed(MouseEvent e) {
-	}
-
-	public void mouseReleased(MouseEvent e) {
+		for (Tiro tiro : tiros)
+			tiro.draw(g2d);
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		for (Tanque t : tanques)
 			t.mover();
+		colisao();
+		
+		for (Tiro tiro : tiros)
+			tiro.mover();
 		repaint();
+	}
+
+	public void atirar(Tanque tiro) {
+		tiros.add(new Tiro(tiro.getX(), tiro.getY(), tiro.getAngulo(), tiro.getCor()));
+	}
+
+	public void colisao() {
+		for (Tiro tiro : tiros) {
+			for (Tanque t : tanques) {
+				double distancia = Math.sqrt(Math.pow(tiro.getX() - t.getX(), 2) + Math.pow(tiro.getY() - t.getY(), 2));
+				if ((distancia <= 30) && (t.getEstaAtivo() == false)) {
+					tanques.remove(t);
+					break;
+				}
+			}
+		}
 	}
 
 	/*
@@ -139,7 +126,7 @@ public class Arena extends JComponent implements KeyListener, MouseListener, Act
 				case KeyEvent.VK_DOWN:
 					break;
 				case KeyEvent.VK_SPACE:
-					// atirar(t);
+					atirar(t);
 					break;
 				}
 			}
@@ -187,26 +174,26 @@ public class Arena extends JComponent implements KeyListener, MouseListener, Act
 	 * @param arena
 	 * @param jogo
 	 */
-	public void setConfig(Arena arena, Jogo jogo) {
+	public void setConfig(Jogo jogo) {
 
 		// Configura o Nivel
 		switch (jogo.getNivel().toString()) {
 		case "FACIL":
-			setConfigFacil(arena, jogo);
+			setConfigFacil(this, jogo);
 			break;
 		case "MEDIO":
-			setConfigMedio(arena, jogo);
+			setConfigMedio(this, jogo);
 			break;
 		case "DIFICIL":
-			setConfigDificil(arena, jogo);
+			setConfigDificil(this, jogo);
 			break;
 		default:
 			break;
 		}
 
 		JFrame janela = new JFrame("Tanques");
-		janela.getContentPane().add(arena.getArena());
-		janela.addKeyListener(arena.getArena());
+		janela.getContentPane().add(this);
+		janela.addKeyListener(this);
 		janela.pack();
 		janela.setVisible(true);
 		janela.setDefaultCloseOperation(3);
@@ -218,27 +205,45 @@ public class Arena extends JComponent implements KeyListener, MouseListener, Act
 	 * - Apenas um Tanque inimigo
 	 */
 	public static void setConfigFacil(Arena arena, Jogo jogo) {
-		
-		for (int i = 0; i < 1; i++) {
-			for (Cores cor : Cores.values()) {
-				if (jogo.getCorTanque() != cor) {
-					System.out.println("aa");
-					arena.adicionaTanque(new Tanque(450, 50, 157, getCor(cor.toString())));
-					break;
-				}
+		for (Cores cor : Cores.values()) {
+			if (jogo.getCorTanque() != cor) {
+				arena.adicionaTanque(new Tanque(450, 50, 157, getCor(cor.toString())));
+				break;
 			}
 		}
-		arena.setArena(arena);
 	}
 
 	public static void setConfigMedio(Arena arena, Jogo jogo) {
-
+		int cont = 0, angulo = 0, x = 100, y = 300;
+		for (Cores cor : Cores.values()) {
+			if (jogo.getCorTanque() != cor) {
+				cont++;
+				x += 100;
+				y -= 50;
+				angulo += 45;
+				arena.adicionaTanque(new Tanque(x, y, angulo, getCor(cor.toString())));
+				if (cont == 2)
+					break;
+			}
+		}
 	}
 
 	public static void setConfigDificil(Arena arena, Jogo jogo) {
-
+		int cont = 0, angulo = 0, x = 100, y = 300;
+		for (Cores cor : Cores.values()) {
+			if (jogo.getCorTanque() != cor) {
+				cont++;
+				x += 100;
+				y -= 50;
+				angulo += 45;
+				arena.adicionaTanque(new Tanque(x, y, angulo, getCor(cor.toString())));
+				if (cont == 3)
+					break;
+			}
+		}
 	}
 
+	@SuppressWarnings("static-access")
 	public static Color getCor(String corSelecionada) {
 		Color cor = null;
 		switch (corSelecionada) {
@@ -253,21 +258,6 @@ public class Arena extends JComponent implements KeyListener, MouseListener, Act
 		default:
 			return cor.GRAY;
 		}
-	}
-
-	/**
-	 * @return the arena
-	 */
-	public Arena getArena() {
-		return arena;
-	}
-
-	/**
-	 * @param arena
-	 *            the arena to set
-	 */
-	public void setArena(Arena arena) {
-		this.arena = arena;
 	}
 
 }
